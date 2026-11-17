@@ -1,0 +1,66 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import {events, site} from '../../data/site';
+import {photo} from '../../lib/photos';
+
+const crumbs = [{name: 'Events', href: '/events/'}];
+const list = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: events.map((e, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: e.name,
+    url: `${site.url}/events/${e.slug}/`,
+  })),
+};
+---
+
+<Base
+  title="Events We Style: Weddings, 21sts, Baby Showers & More"
+  description="Weddings, kids’ parties, 21sts, baby showers, kitchen teas, high teas, workshops and product launches, styled and hosted by 190 on Maple across Midrand and Gauteng."
+  crumbs={crumbs}
+  schema={[list]}
+>
+  <Hero
+    lines={[{t: 'Events we'}, {t: 'love to style', s: true}]}
+    slides={['tablescapes-15.jpg']}
+    crumbs={crumbs}
+    body="Whatever you’re celebrating, we bring the décor, the food, the furniture and the hosting."
+  />
+
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 py-20 md:px-14 md:py-28">
+      <ol class="space-y-20 md:space-y-28">
+        {
+          events.map((e, i) => {
+            const p = photo(e.hero);
+            const flip = i % 2 === 1;
+            return (
+              <li class="grid items-center gap-8 md:grid-cols-2 md:gap-16">
+                <a href={`/events/${e.slug}/`} class:list={['group block overflow-hidden bg-blush', {'md:order-2': flip}]} data-reveal tabindex="-1" aria-hidden="true">
+                  <Image quality={70} src={p.img} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 46vw, 100vw" class="aspect-[5/4] h-full w-full object-cover transition-transform duration-[1.6s] ease-silk group-hover:scale-105" />
+                </a>
+                <div data-reveal style="--d:1">
+                  <span class="caps text-rose-deep">0{i + 1}</span>
+                  <h2 class="display mt-3 text-[clamp(38px,4vw,68px)] text-forest">
+                    {e.lines.map((l) => (l.s ? <span class="s text-rose-deep">{l.t}</span> : <span class="block">{l.t}</span>))}
+                  </h2>
+                  <p class="mt-5 max-w-[52ch] text-ink/85">{e.intro}</p>
+                  <a href={`/events/${e.slug}/`} class="caps mt-7 inline-flex min-h-12 items-center bg-forest px-7 py-3 text-paper transition-colors hover:bg-ink">
+                    Explore {e.name.split(',')[0].split(' &')[0].toLowerCase()} <span aria-hidden="true" class="ml-3">→</span>
+                  </a>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </section>
+
+  <CtaBand photo="baby-03.jpg" />
+</Base>

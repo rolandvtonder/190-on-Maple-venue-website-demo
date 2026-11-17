@@ -1,0 +1,46 @@
+---
+/**
+ * The occasions: three tall panels slide in from the right one after another,
+ * each a doorway into a family of events.
+ */
+import {Image} from 'astro:assets';
+import {occasions} from '../data/site';
+import {photo} from '../lib/photos';
+---
+
+<section aria-labelledby="occasions-title" class="relative bg-ink">
+  <h2 id="occasions-title" class="sr-only">What we style</h2>
+  <div data-panels class="grid min-h-[640px] grid-cols-1 gap-[3px] overflow-hidden md:h-svh md:grid-cols-3">
+    {
+      occasions.map((o, i) => {
+        const p = photo(o.photo);
+        return (
+          <a href={o.href} class="panel group relative block h-[80svh] min-h-[480px] overflow-hidden bg-forest text-white md:h-auto" style={`transition-delay:${0.12 + i * 0.16}s`}>
+            <Image quality={70} loading="eager" decoding="async" src={p.img} alt="" widths={[480, 720, 1080]} sizes="(min-width: 768px) 34vw, 100vw" class="absolute inset-0 h-full w-full object-cover" />
+            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgb(27_36_29/0.7),transparent_45%,rgb(27_36_29/0.55))]" />
+            <div class="relative flex h-full flex-col justify-between p-7 md:p-9">
+              <div>
+                <p class="caps text-white/80">0{i + 1} / 03</p>
+                <h3 class="display mt-4 text-[clamp(40px,3.6vw,64px)]">
+                  <span class="block">{o.name[0]}</span>
+                  <span class="s">{o.name[1]}</span>
+                </h3>
+                <dl class="mt-6 space-y-3">
+                  {o.specs.map(([k, v]) => (
+                    <div>
+                      <dt class="caps text-white/70">{k}</dt>
+                      <dd class="text-[16px] text-white">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <span class="caps inline-flex items-center gap-3 self-start border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                Explore <span aria-hidden="true" class="transition-transform duration-500 group-hover:translate-x-1">→</span>
+              </span>
+            </div>
+          </a>
+        );
+      })
+    }
+  </div>
+</section>

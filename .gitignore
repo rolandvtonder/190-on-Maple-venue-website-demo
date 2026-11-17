@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+.claude
+
+# Original Facebook downloads stay local: the site uses the cleaned,
+# captioned copies in src/assets/photos instead.
+media/

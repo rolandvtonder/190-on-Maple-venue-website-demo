@@ -1,0 +1,30 @@
+---
+import {Image} from 'astro:assets';
+import {photo} from '../lib/photos';
+import {site} from '../data/site';
+
+interface Props {
+  photo?: string;
+  heading?: [string, string];
+}
+const {photo: file = 'tablescapes-15.jpg', heading = ['Let’s plan', 'something beautiful']} = Astro.props;
+const p = photo(file);
+---
+
+<section class="relative overflow-hidden bg-forest text-white">
+  <Image quality={70} src={p.img} alt="" widths={[640, 1280, 1920]} sizes="100vw" class="absolute inset-0 h-full w-full object-cover opacity-35" />
+  <div class="absolute inset-0 bg-[linear-gradient(90deg,rgb(27_36_29/0.85),rgb(27_36_29/0.4))]"></div>
+  <div class="relative mx-auto max-w-[1500px] px-5 py-28 md:px-14 md:py-40">
+    <h2 class="display text-[clamp(46px,6.4vw,112px)]" data-reveal>
+      <span class="block">{heading[0]}</span>
+      <span class="s">{heading[1]}</span>
+    </h2>
+    <p class="mt-8 max-w-[46ch] text-white/90" data-reveal style="--d:1">
+      Tell us your date, your guest count and the feeling you’re after. We’ll come back with ideas, a palette and a clear quote.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-3" data-reveal style="--d:2">
+      <a href="/contact/" class="caps inline-flex min-h-12 items-center bg-paper px-8 py-4 text-ink transition-colors hover:bg-blush">Send an enquiry</a>
+      <a href={site.whatsapp} rel="noopener" target="_blank" class="caps inline-flex min-h-12 items-center border border-white/60 px-8 py-4 text-white transition-colors hover:bg-white/10">WhatsApp {site.phone}</a>
+    </div>
+  </div>
+</section>

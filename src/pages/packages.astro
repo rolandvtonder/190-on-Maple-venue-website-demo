@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {addOns, packages, steps} from '../data/site';
+
+const crumbs = [{name: 'Packages', href: '/packages/'}];
+---
+
+<Base
+  title="Event Packages: Styling, Catering & Full Service"
+  description="Choose styling only, styling with catering, or a full walk in, walk out service. 190 on Maple tailors every event package to your date, guest count and budget."
+  crumbs={crumbs}
+>
+  <Hero lines={[{t: 'Packages'}, {t: 'made to measure', s: true}]} slides={['catering-01.jpg']} crumbs={crumbs} body="Three ways to work with us, each quoted to your date, guest count and budget." />
+
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 py-20 md:px-14 md:py-28">
+      <ul class="grid gap-6 lg:grid-cols-3">
+        {
+          packages.map((p, i) => (
+            <li class:list={['flex flex-col p-8 md:p-10', p.featured ? 'bg-forest text-paper' : 'bg-sand text-ink']} data-reveal style={`--d:${i}`}>
+              <p class:list={['caps', p.featured ? 'text-blush' : 'text-rose-deep']}>0{i + 1}</p>
+              <h2 class:list={['display mt-3 text-[clamp(38px,3.4vw,56px)]', p.featured ? 'text-paper' : 'text-forest']}>
+                <span class="block">{p.name}</span>
+                <span class:list={['s text-[0.7em]', p.featured ? 'text-blush' : 'text-rose-deep']}>{p.script}</span>
+              </h2>
+              <p class:list={['mt-5 text-[17px]', p.featured ? 'text-paper/85' : 'text-ink/80']}>{p.lede}</p>
+              <ul class="mt-7 flex-1 space-y-3">
+                {p.items.map((item) => (
+                  <li class="flex gap-3 text-[16px]">
+                    <svg viewBox="0 0 20 20" class:list={['mt-1 size-4 shrink-0', p.featured ? 'text-blush' : 'text-rose-deep']} aria-hidden="true">
+                      <path d="M3 10.5l4.2 4L17 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p class:list={['caps mt-8', p.featured ? 'text-paper/70' : 'text-ink/60']}>Quoted per event</p>
+              <a href={`/contact/?package=${encodeURIComponent(p.name)}`} class:list={['caps mt-3 inline-flex min-h-12 items-center justify-center px-7 py-3 transition-colors', p.featured ? 'bg-paper text-ink hover:bg-blush' : 'bg-forest text-paper hover:bg-ink']}>
+                Request a quote
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="bg-blush">
+    <div class="mx-auto grid max-w-[1500px] gap-12 px-5 py-20 md:grid-cols-[1fr_1.4fr] md:px-14 md:py-28">
+      <h2 class="display text-[clamp(38px,4vw,66px)] text-forest" data-reveal>Add a <span class="s text-rose-deep">little extra</span></h2>
+      <ul class="flex flex-wrap content-start gap-2" data-reveal style="--d:1">
+        {addOns.map((a) => <li class="bg-paper px-5 py-3 text-[16px] text-forest">{a}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 py-20 md:px-14 md:py-28">
+      <h2 class="display text-[clamp(38px,4vw,66px)] text-forest" data-reveal>How it <span class="s text-rose-deep">works</span></h2>
+      <ol class="mt-12 grid gap-px bg-forest/15 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          steps.map((s, i) => (
+            <li class="bg-paper p-7" data-reveal style={`--d:${i}`}>
+              <span class="display text-[64px] leading-none text-rose">{i + 1}</span>
+              <h3 class="display mt-4 text-[30px] text-forest">{s.title}</h3>
+              <p class="mt-2 text-[16px] text-ink/80">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <CtaBand photo="birthdays-05.jpg" />
+</Base>

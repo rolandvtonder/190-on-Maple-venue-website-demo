@@ -1,0 +1,123 @@
+---
+/**
+ * The menu: three slabs wipe in from the right one after another (forest,
+ * blush, paper); the paper one stays and holds the links. Hovering a link
+ * ripples it like heat haze over a summer lawn (see scripts/app.ts).
+ */
+import {nav, site} from '../data/site';
+
+const here = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? here === '/' : here.startsWith(href));
+---
+
+<div id="menu" class="menu fixed inset-0 z-50" inert>
+  <svg class="absolute size-0" aria-hidden="true" focusable="false">
+    <filter id="ripple" x="-5%" y="-30%" width="110%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="2" seed="2" result="n"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
+
+  <button type="button" data-menu-close aria-label="Close menu" tabindex="-1" class="scrim absolute inset-0 cursor-default bg-ink/30"></button>
+
+  <div class="slab bg-forest" style="--k:0"></div>
+  <div class="slab bg-blush" style="--k:1"></div>
+  <nav class="slab flex flex-col justify-between overflow-y-auto bg-paper px-8 pt-28 pb-8 text-ink md:px-10" style="--k:2" aria-label="Main menu">
+    <ul>
+      {
+        nav.map((item, i) => (
+          <li class="item" style={`--i:${i}`}>
+            <a
+              href={item.href}
+              data-menu-link
+              aria-current={isCurrent(item.href) ? 'page' : undefined}
+              class="display relative inline-block py-1 text-[clamp(30px,3vw,44px)] transition-opacity duration-300 aria-[current=page]:text-rose-deep"
+            >
+              {item.label}
+              <sup class="caps absolute top-2 -right-7 text-[10px] tracking-normal text-ink/50">0{i + 1}</sup>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="foot mt-10 space-y-5">
+      <div>
+        <p class="caps text-ink/60">Get in touch</p>
+        <a href={`tel:${site.phoneIntl}`} class="mt-1 block text-[17px] hover:text-rose-deep">{site.phone}</a>
+        <a href={`mailto:${site.email}`} class="block text-[17px] hover:text-rose-deep">{site.email}</a>
+      </div>
+      <div>
+        <p class="caps text-ink/60">Socials</p>
+        <div class="mt-1 flex flex-wrap gap-x-5 gap-y-1">
+          <a href={site.instagram} rel="noopener" target="_blank" class="caps py-2 text-ink/85 hover:text-rose-deep">Instagram</a>
+          <a href={site.facebook} rel="noopener" target="_blank" class="caps py-2 text-ink/85 hover:text-rose-deep">Facebook</a>
+          <a href={site.whatsapp} rel="noopener" target="_blank" class="caps py-2 text-ink/85 hover:text-rose-deep">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<style>
+  .menu {
+    pointer-events: none;
+  }
+  :global(.menu-open) .menu {
+    pointer-events: auto;
+  }
+  .scrim {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  :global(.menu-open) .scrim {
+    opacity: 1;
+  }
+  .slab {
+    position: absolute;
+    inset-block: 0;
+    right: 0;
+    width: min(34vw, 480px);
+    transform: translateX(104%);
+    transition: transform 0.8s var(--ease-wipe);
+    /* Close: the reverse, faster. */
+    transition-delay: calc((2 - var(--k)) * 0.06s);
+  }
+  :global(.menu-open) .slab {
+    transform: none;
+    /* Open: forest → blush → paper, staggered. */
+    transition-delay: calc(var(--k) * 0.09s);
+  }
+  @media (max-width: 767px) {
+    .slab {
+      width: 100%;
+    }
+  }
+  .item {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s var(--ease-silk),
+      transform 0.7s var(--ease-silk);
+  }
+  :global(.menu-open) .item {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.42s + var(--i) * 0.05s);
+  }
+  .foot {
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+  :global(.menu-open) .foot {
+    opacity: 1;
+    transition-delay: 0.75s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slab,
+    .item,
+    .foot {
+      transition-duration: 0.01s;
+      transition-delay: 0s !important;
+    }
+  }
+</style>

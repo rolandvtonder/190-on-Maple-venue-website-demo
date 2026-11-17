@@ -1,0 +1,95 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import PhotoMosaic from '../../components/PhotoMosaic.astro';
+import Quote from '../../components/Quote.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import {events, site, type EventType} from '../../data/site';
+
+export function getStaticPaths() {
+  return events.map((e) => ({params: {slug: e.slug}, props: {event: e}}));
+}
+
+const {event: e} = Astro.props as {event: EventType};
+const crumbs = [
+  {name: 'Events', href: '/events/'},
+  {name: e.name, href: `/events/${e.slug}/`},
+];
+const others = events.filter((x) => x.slug !== e.slug);
+const service = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: `${e.name} styling`,
+  serviceType: e.name,
+  description: e.metaDescription,
+  provider: {'@id': `${site.url}/#business`},
+  areaServed: site.serves.map((name) => ({'@type': 'Place', name})),
+  url: `${site.url}/events/${e.slug}/`,
+};
+---
+
+<Base title={e.metaTitle} description={e.metaDescription} crumbs={crumbs} schema={[service]}>
+  <Hero lines={e.lines} slides={[e.hero]} crumbs={crumbs} eyebrow="Styled & hosted by 190 on Maple" />
+
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-[1500px] gap-14 px-5 py-20 md:grid-cols-[1.1fr_1fr] md:px-14 md:py-28">
+      <div data-reveal>
+        <h2 class="display text-[clamp(34px,3.6vw,60px)] text-forest">
+          {e.name} in <span class="s text-rose-deep">Midrand & Gauteng</span>
+        </h2>
+        <p class="mt-7 max-w-[58ch] text-[18px] text-ink/85">{e.intro}</p>
+        <div class="mt-10">
+          <h3 class="caps text-ink/70">Popular looks</h3>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {e.ideas.map((t) => <li class="border border-forest/25 px-4 py-2 text-[15px] text-forest">{t}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="bg-sand p-7 md:p-10" data-reveal style="--d:1">
+        <h3 class="display text-[32px] text-forest">What we take care of</h3>
+        <ul class="mt-6 space-y-4">
+          {
+            e.includes.map((item) => (
+              <li class="flex gap-4 text-[16px] text-ink/90">
+                <svg viewBox="0 0 20 20" class="mt-1 size-4 shrink-0 text-rose-deep" aria-hidden="true">
+                  <path d="M3 10.5l4.2 4L17 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/packages/" class="caps mt-8 inline-block border-b border-forest/40 pb-1 text-forest hover:border-forest">See packages →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-paper pb-2" aria-label={`${e.name} photos`}>
+    <PhotoMosaic files={e.photos} />
+    <div class="mx-auto max-w-[1500px] px-5 py-8 md:px-14">
+      <a href={`/gallery/?cat=${e.cats[0]}`} class="caps border-b border-forest/40 pb-1 text-forest hover:border-forest">More in the gallery →</a>
+    </div>
+  </section>
+
+  {e.quote !== undefined && <Quote index={e.quote} />}
+
+  <section class="bg-sand">
+    <div class="mx-auto max-w-[1500px] px-5 py-20 md:px-14 md:py-24">
+      <h2 class="display text-[clamp(32px,3.4vw,54px)] text-forest">Other <span class="s text-rose-deep">celebrations</span></h2>
+      <ul class="mt-8 grid gap-px bg-forest/15 sm:grid-cols-2 lg:grid-cols-5">
+        {
+          others.map((o) => (
+            <li class="bg-sand">
+              <a href={`/events/${o.slug}/`} class="group flex h-full min-h-24 items-end justify-between gap-4 p-5 hover:bg-paper">
+                <span class="display text-[24px] leading-none text-forest">{o.name}</span>
+                <span aria-hidden="true" class="text-rose-deep transition-transform group-hover:translate-x-1">→</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand photo={e.photos[0]} />
+</Base>

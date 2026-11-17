@@ -1,0 +1,169 @@
+---
+import {Image, getImage} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {galleryCats} from '../data/site';
+import {allPhotos} from '../lib/photos';
+
+const crumbs = [{name: 'Gallery', href: '/gallery/'}];
+const order = Object.keys(galleryCats);
+const photos = allPhotos().sort((a, b) => order.indexOf(a.cat) - order.indexOf(b.cat));
+// Large versions for the lightbox, generated at build time.
+const large = await Promise.all(photos.map((p) => getImage({src: p.img, width: 1600, format: 'webp', quality: 72})));
+const counts = Object.fromEntries(order.map((c) => [c, photos.filter((p) => p.cat === c).length]));
+---
+
+<Base
+  title="Gallery: Event Décor, Tablescapes & Setups"
+  description="Browse 120 photos of events styled by 190 on Maple: garden ceremonies, tablescapes, 21sts, baby showers, kids’ parties, lounges, catering and drinks bars."
+  crumbs={crumbs}
+>
+  <Hero lines={[{t: 'The'}, {t: 'Gallery', s: true}]} slides={['tablescapes-09.jpg']} crumbs={crumbs} body="Every setup here was designed, built and hosted by our team. Filter by occasion and tap any photo to see it larger." />
+
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1600px] px-5 py-14 md:px-14 md:py-20">
+      <div class="flex flex-wrap gap-2" role="group" aria-label="Filter photos">
+        <button type="button" data-filter="all" aria-pressed="true" class="chip caps min-h-11 border border-forest/30 px-5 text-forest">All <span class="text-ink/60">{photos.length}</span></button>
+        {
+          order.map((c) => (
+            <button type="button" data-filter={c} aria-pressed="false" class="chip caps min-h-11 border border-forest/30 px-5 text-forest">
+              {galleryCats[c]} <span class="text-ink/60">{counts[c]}</span>
+            </button>
+          ))
+        }
+      </div>
+      <p class="sr-only" aria-live="polite" data-count>Showing all {photos.length} photos</p>
+
+      <ul class="mt-10 columns-2 gap-[6px] md:columns-3 xl:columns-4" data-grid>
+        {
+          photos.map((p, i) => (
+            <li class="mb-[6px] break-inside-avoid" data-cat={p.cat}>
+              <button type="button" class="group block w-full cursor-zoom-in overflow-hidden bg-sand" data-open={i} data-full={large[i].src} data-alt={p.alt} aria-label={`View larger: ${p.alt}`}>
+                <Image quality={70} src={p.img} alt={p.alt} widths={[360, 560, 800]} sizes="(min-width: 1280px) 24vw, (min-width: 768px) 32vw, 49vw" class="h-auto w-full transition-transform duration-[1.2s] ease-silk group-hover:scale-[1.04]" />
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <dialog class="lightbox m-0 h-dvh max-h-none w-screen max-w-none bg-ink p-0 text-paper backdrop:bg-transparent" aria-label="Photo viewer">
+    <div class="flex h-full flex-col">
+      <div class="flex items-center justify-between px-4 py-3 md:px-8">
+        <p class="caps text-paper/70" data-pos></p>
+        <button type="button" data-close class="caps min-h-11 px-4 text-paper hover:text-blush">Close ✕</button>
+      </div>
+      <figure class="relative flex min-h-0 flex-1 items-center justify-center px-14 md:px-24">
+        <img data-img alt="" class="max-h-full max-w-full object-contain" />
+        <button type="button" data-prev aria-label="Previous photo" class="absolute top-1/2 left-1 grid size-12 -translate-y-1/2 place-items-center text-3xl hover:text-blush md:left-6">‹</button>
+        <button type="button" data-next aria-label="Next photo" class="absolute top-1/2 right-1 grid size-12 -translate-y-1/2 place-items-center text-3xl hover:text-blush md:right-6">›</button>
+      </figure>
+      <figcaption class="px-5 py-4 text-center text-[15px] text-paper/80" data-cap></figcaption>
+    </div>
+  </dialog>
+
+  <CtaBand photo="ceremony-03.jpg" heading={['Like what', 'you see?']} />
+</Base>
+
+<style>
+  .chip[aria-pressed='true'] {
+    background: var(--color-forest);
+    color: var(--color-paper);
+    border-color: var(--color-forest);
+  }
+  .chip[aria-pressed='true'] span {
+    color: rgb(250 247 242 / 0.7);
+  }
+  .chip:not([aria-pressed='true']):hover {
+    background: var(--color-sand);
+  }
+</style>
+
+<script>
+  import {lockScroll} from '../scripts/scroll';
+
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const items = [...document.querySelectorAll<HTMLLIElement>('[data-grid] > li')];
+  const live = document.querySelector('[data-count]')!;
+
+  const apply = (cat: string) => {
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.filter === cat)));
+    let n = 0;
+    items.forEach((li) => {
+      const show = cat === 'all' || li.dataset.cat === cat;
+      li.hidden = !show;
+      if (show) n++;
+    });
+    const label = chips.find((c) => c.dataset.filter === cat)?.firstChild?.textContent?.trim() ?? 'all';
+    live.textContent = `Showing ${n} photos${cat === 'all' ? '' : ` in ${label}`}`;
+  };
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      const cat = c.dataset.filter!;
+      apply(cat);
+      const url = new URL(location.href);
+      if (cat === 'all') url.searchParams.delete('cat');
+      else url.searchParams.set('cat', cat);
+      history.replaceState(null, '', url);
+    }),
+  );
+  const initial = new URLSearchParams(location.search).get('cat');
+  if (initial && chips.some((c) => c.dataset.filter === initial)) apply(initial);
+
+  // Lightbox
+  const dlg = document.querySelector<HTMLDialogElement>('.lightbox')!;
+  const img = dlg.querySelector<HTMLImageElement>('[data-img]')!;
+  const cap = dlg.querySelector('[data-cap]')!;
+  const pos = dlg.querySelector('[data-pos]')!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-open]')];
+  let current = 0;
+  let opener: HTMLElement | null = null;
+
+  const visible = () => buttons.filter((b) => !b.closest('li')!.hidden);
+  const show = (b: HTMLButtonElement) => {
+    const list = visible();
+    current = list.indexOf(b);
+    img.src = b.dataset.full!;
+    img.alt = b.dataset.alt!;
+    cap.textContent = b.dataset.alt!;
+    pos.textContent = `${current + 1} / ${list.length}`;
+  };
+  const step = (d: number) => {
+    const list = visible();
+    show(list[(current + d + list.length) % list.length]);
+  };
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      opener = b;
+      show(b);
+      dlg.showModal();
+      lockScroll(true);
+    }),
+  );
+  dlg.addEventListener('close', () => {
+    lockScroll(false);
+    opener?.focus({preventScroll: true});
+  });
+  dlg.querySelector('[data-close]')!.addEventListener('click', () => dlg.close());
+  dlg.querySelector('[data-prev]')!.addEventListener('click', () => step(-1));
+  dlg.querySelector('[data-next]')!.addEventListener('click', () => step(1));
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+  dlg.addEventListener('click', (e) => {
+    if (e.target === dlg || (e.target as HTMLElement).tagName === 'FIGURE') dlg.close();
+  });
+
+  // Simple swipe on touch screens.
+  let x0: number | null = null;
+  dlg.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), {passive: true});
+  dlg.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    x0 = null;
+  });
+</script>

@@ -1,0 +1,77 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {site} from '../data/site';
+import {photo} from '../lib/photos';
+
+const crumbs = [{name: 'Venues', href: '/venues/'}];
+const own = photo('lounge-09.jpg');
+const partner = photo('birthdays-21.jpg');
+const checklist = [
+  'Enough flat, level space for your layout and guest count',
+  'Shade or cover: trees, a gazebo, or room for a marquee',
+  'Power points for lighting, sound and catering',
+  'Easy access for delivery and setup',
+  'Parking and bathrooms for your guests',
+  'Noise and finishing-time rules that suit your plans',
+];
+---
+
+<Base
+  title="Venue Hire in Midrand & Gauteng"
+  description="Need a venue in Midrand or Gauteng? 190 on Maple styles your own venue or helps you find and book a partner venue, then handles the décor, catering and hosting."
+  crumbs={crumbs}
+>
+  <Hero lines={[{t: 'Venue hire,'}, {t: 'done properly', s: true}]} slides={['ceremony-06.jpg']} crumbs={crumbs} body="Your space or one of our partner venues, transformed from bare room to finished celebration." />
+
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 pt-20 md:px-14 md:pt-28">
+      <div class="border-l-4 border-rose bg-sand p-6 md:p-8" data-reveal>
+        <p class="caps text-rose-deep">Please note</p>
+        <p class="mt-2 max-w-[80ch] text-[17px] text-ink/90">{site.residenceNote}</p>
+      </div>
+    </div>
+    <div class="mx-auto grid max-w-[1500px] gap-16 px-5 py-20 md:grid-cols-2 md:px-14 md:py-28">
+      {
+        [
+          {p: own, n: '01', t: ['Your', 'venue'], b: 'A garden at home, a family farm, a church hall or your office: if the space works, we’ll transform it. We visit beforehand, plan the layout and bring everything in, from tents and furniture to décor and catering.'},
+          {p: partner, n: '02', t: ['A partner', 'venue'], b: 'No venue yet? Tell us your guest count, area and budget and we’ll suggest suitable partner venues around Kyalami, Midrand and greater Gauteng. We help you book, then style and host the day there.'},
+        ].map((o, i) => (
+          <article data-reveal style={`--d:${i}`}>
+            <div class="aspect-[4/3] overflow-hidden bg-blush">
+              <Image quality={70} src={o.p.img} alt={o.p.alt} widths={[600, 1000]} sizes="(min-width: 768px) 46vw, 100vw" class="h-full w-full object-cover" />
+            </div>
+            <p class="caps mt-6 text-rose-deep">{o.n}</p>
+            <h2 class="display mt-2 text-[clamp(38px,3.8vw,62px)] text-forest">
+              <span class="block">{o.t[0]}</span>
+              <span class="s text-rose-deep">{o.t[1]}</span>
+            </h2>
+            <p class="mt-5 max-w-[56ch] text-ink/85">{o.b}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bg-forest text-paper">
+    <div class="mx-auto grid max-w-[1500px] gap-12 px-5 py-20 md:grid-cols-[1fr_1.3fr] md:px-14 md:py-28">
+      <h2 class="display text-[clamp(38px,4vw,66px)]" data-reveal>What makes a <span class="s text-blush">venue work</span></h2>
+      <ul class="space-y-4" data-reveal style="--d:1">
+        {
+          checklist.map((c) => (
+            <li class="flex gap-4 border-b border-paper/15 pb-4 text-[17px] text-paper/90">
+              <svg viewBox="0 0 20 20" class="mt-1 size-4 shrink-0 text-blush" aria-hidden="true">
+                <path d="M3 10.5l4.2 4L17 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              {c}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand photo="ceremony-03.jpg" heading={['Find your', 'perfect venue']} />
+</Base>

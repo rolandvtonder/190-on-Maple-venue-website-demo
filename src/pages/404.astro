@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Base title="Page not found" description="This page couldn’t be found." noindex>
+  <Hero full lines={[{t: 'This table'}, {t: 'isn’t set yet', s: true}]} slides={['tablescapes-06.jpg']} body="The page you’re looking for has moved or doesn’t exist." />
+  <section class="bg-paper">
+    <div class="mx-auto flex max-w-[1500px] flex-wrap gap-3 px-5 py-20 md:px-14">
+      <a href="/" class="caps inline-flex min-h-12 items-center bg-forest px-8 py-4 text-paper hover:bg-ink">Back home</a>
+      <a href="/events/" class="caps inline-flex min-h-12 items-center border border-forest px-8 py-4 text-forest hover:bg-sand">See our events</a>
+      <a href="/contact/" class="caps inline-flex min-h-12 items-center border border-forest px-8 py-4 text-forest hover:bg-sand">Contact us</a>
+    </div>
+  </section>
+</Base>

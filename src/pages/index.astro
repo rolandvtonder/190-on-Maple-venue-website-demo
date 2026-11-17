@@ -1,0 +1,114 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Occasions from '../components/Occasions.astro';
+import PhotoMosaic from '../components/PhotoMosaic.astro';
+import Quote from '../components/Quote.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {events, hero, pillars} from '../data/site';
+import {photo} from '../lib/photos';
+---
+
+<Base
+  title="Event Styling & Hosting in Kyalami, Midrand"
+  description="190 on Maple styles and hosts weddings, 21sts, baby showers, kids’ parties, high teas and brand events in Midrand and Gauteng: décor, catering and a full walk in, walk out service."
+>
+  <Hero full lines={hero.lines} slides={hero.slides} body={hero.body} />
+
+  <Occasions />
+
+  <!-- Walk in, walk out -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 py-24 md:px-14 md:py-36">
+      <p class="caps text-rose-deep" data-reveal>The 190 on Maple way</p>
+      <h2 class="display mt-5 max-w-[16ch] text-[clamp(40px,5.4vw,92px)] text-forest" data-reveal style="--d:1">
+        You walk in. You celebrate. <span class="s text-rose-deep">You walk out.</span>
+      </h2>
+      <p class="mt-8 max-w-[58ch] text-[18px] text-ink/85" data-reveal style="--d:2">
+        We’re a whimsical, detail-obsessed styling and hosting team. We curate your event from first idea to final pack-down, so
+        the only thing on your list is enjoying it. Every setup in our gallery was designed, built and hosted by us.
+      </p>
+      <ol class="mt-16 grid gap-px bg-forest/15 md:grid-cols-4">
+        {
+          pillars.map((p, i) => (
+            <li class="bg-paper p-6 pt-8 md:p-8" data-reveal style={`--d:${i}`}>
+              <span class="caps text-rose-deep">0{i + 1}</span>
+              <h3 class="display mt-3 text-[30px] text-forest">{p.title}</h3>
+              <p class="mt-3 text-[16px] text-ink/80">{p.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section class="bg-sand">
+    <div class="mx-auto max-w-[1500px] px-5 py-24 md:px-14 md:py-32">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <h2 class="display text-[clamp(40px,5vw,84px)] text-forest" data-reveal>
+          Every kind of <span class="s text-rose-deep">celebration</span>
+        </h2>
+        <a href="/events/" class="caps self-start border-b border-forest/40 pb-1 text-forest hover:border-forest md:self-auto" data-reveal>All events →</a>
+      </div>
+      <ul class="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          events.map((e, i) => {
+            const p = photo(e.hero);
+            return (
+              <li data-reveal style={`--d:${i % 3}`}>
+                <a href={`/events/${e.slug}/`} class="group block">
+                  <div class="aspect-[4/5] overflow-hidden bg-blush">
+                    <Image quality={70} src={p.img} alt={p.alt} widths={[400, 640, 900]} sizes="(min-width: 1024px) 31vw, (min-width: 640px) 48vw, 100vw" class="h-full w-full object-cover transition-transform duration-[1.6s] ease-silk group-hover:scale-105" />
+                  </div>
+                  <h3 class="display mt-5 text-[30px] text-forest group-hover:text-rose-deep">{e.name}</h3>
+                  <p class="mt-2 line-clamp-2 text-[16px] text-ink/75">{e.metaDescription}</p>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Gallery teaser -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-[1500px] px-5 pt-24 pb-10 md:px-14 md:pt-32">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <h2 class="display text-[clamp(40px,5vw,84px)] text-forest" data-reveal>
+          Styled by <span class="s text-rose-deep">us</span>
+        </h2>
+        <a href="/gallery/" class="caps self-start border-b border-forest/40 pb-1 text-forest hover:border-forest md:self-auto" data-reveal>See the full gallery →</a>
+      </div>
+    </div>
+    <PhotoMosaic files={['tablescapes-05.jpg', 'catering-01.jpg', 'birthdays-15.jpg', 'kids-08.jpg', 'baby-03.jpg', 'drinks-03.jpg', 'tablescapes-11.jpg', 'ceremony-04.jpg']} />
+  </section>
+
+  <Quote index={0} />
+
+  <!-- Venues, clearly separated -->
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-[1500px] gap-12 px-5 py-24 md:grid-cols-2 md:px-14 md:py-32">
+      <div data-reveal>
+        <p class="caps text-rose-deep">Venue hire</p>
+        <h2 class="display mt-5 text-[clamp(40px,4.6vw,78px)] text-forest">
+          Your venue, <span class="s text-rose-deep">or one of ours</span>
+        </h2>
+      </div>
+      <div class="space-y-5 text-[17px] text-ink/85" data-reveal style="--d:1">
+        <p>
+          Already have a garden, hall or office in mind? We’ll transform it. Still looking? We’ll help you find and book the right
+          space at one of our partner venues around Kyalami, Midrand and greater Gauteng.
+        </p>
+        <p class="border-l-2 border-rose pl-5 text-[16px] text-ink/75">
+          Please note: our Kyalami home is a private residence and isn’t available for hire.
+        </p>
+        <a href="/venues/" class="caps inline-block border-b border-forest/40 pb-1 text-forest hover:border-forest">How venue hire works →</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

@@ -1,0 +1,23 @@
+{
+  "name": "190-on-maple",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "astro": "^5.18.2",
+    "lenis": "^1.3.11",
+    "tailwindcss": "^4.1.14"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "5.9"
+  }
+}

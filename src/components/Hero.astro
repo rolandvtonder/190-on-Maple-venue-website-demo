@@ -1,0 +1,79 @@
+---
+/**
+ * Full-bleed photo hero under a large condensed headline that mixes upright
+ * capitals with script lines. With several photos it crossfades between them.
+ * As you scroll on, the stage blurs, dims and shrinks back — a camera pulling
+ * away rather than a fade (driven by scripts/app.ts).
+ */
+import {Image} from 'astro:assets';
+import {photo} from '../lib/photos';
+import type {Line} from '../data/site';
+
+interface Props {
+  lines: Line[];
+  slides: string[];
+  body?: string;
+  eyebrow?: string;
+  crumbs?: {name: string; href: string}[];
+  full?: boolean;
+}
+const {lines, slides, body, eyebrow, crumbs = [], full = false} = Astro.props;
+const pics = slides.map(photo);
+---
+
+<section data-hero class:list={['relative overflow-hidden bg-ink text-white', full ? 'h-svh min-h-[640px]' : 'h-[82svh] min-h-[560px]']}>
+  <div data-stage data-slides class="absolute inset-0 origin-center will-change-transform">
+    {
+      pics.map((p, i) => (
+        <div class:list={['slide absolute inset-0 overflow-hidden', {'is-on': i === 0}]}>
+          <Image
+            src={p.img}
+            quality={68}
+            alt={i === 0 ? p.alt : ''}
+            aria-hidden={i === 0 ? undefined : 'true'}
+            widths={[640, 960, 1440, 1920]}
+            sizes="100vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            class="h-full w-full object-cover"
+          />
+        </div>
+      ))
+    }
+    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgb(27_36_29/0.72),rgb(27_36_29/0.25)_60%,transparent)]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(0deg,rgb(27_36_29/0.55),transparent_40%)]"></div>
+
+    <!-- Headline sizes by width AND height so the whole block always fits the
+         screen; the paragraph sits at the bottom, clear of the enquiry button. -->
+    <div class="absolute inset-0 mx-auto flex max-w-[1680px] flex-col px-5 pt-[clamp(120px,17svh,180px)] pb-28 md:px-14 lg:pb-[clamp(36px,7svh,80px)]">
+      {
+        crumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" class="caps mb-6 text-white/80">
+            <ol class="flex flex-wrap gap-2">
+              <li><a href="/" class="hover:text-blush">Home</a></li>
+              {crumbs.map((c, i) => (
+                <li class="flex gap-2">
+                  <span aria-hidden="true">/</span>
+                  {i === crumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={c.href} class="hover:text-blush">{c.name}</a>}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      {eyebrow && <p class="caps mb-4 text-blush">{eyebrow}</p>}
+      <h1 class:list={['display drop-shadow-[0_4px_30px_rgb(0_0_0/0.35)]', full ? 'text-[clamp(46px,min(8vw,11svh),144px)]' : 'text-[clamp(44px,min(6.6vw,10svh),116px)]']}>
+        {
+          lines.map((l, i) =>
+            l.s ? (
+              <span class="s">{l.t}</span>
+            ) : (
+              <span class:list={['block', {'pl-[1.4em]': i === 0 && full}]}>{l.t}</span>
+            ),
+          )
+        }
+      </h1>
+      {body && <p class="mt-auto max-w-[480px] pt-6 text-[16px] leading-relaxed text-white/90 md:ml-[clamp(0px,19vw,330px)] md:text-[17px]">{body}</p>}
+    </div>
+  </div>
+</section>

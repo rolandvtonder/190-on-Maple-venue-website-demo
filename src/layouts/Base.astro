@@ -1,0 +1,193 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import Menu from '../components/Menu.astro';
+import Footer from '../components/Footer.astro';
+import {site} from '../data/site';
+
+interface Crumb {
+  name: string;
+  href: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  /** Social share image, relative to /public. */
+  image?: string;
+  /** Extra JSON-LD objects for this page. */
+  schema?: Record<string, unknown>[];
+  crumbs?: Crumb[];
+  noindex?: boolean;
+  /** Hide the floating enquiry button (e.g. on the contact page itself). */
+  hideCta?: boolean;
+}
+
+const {title, description, image = '/og-image.jpg', schema = [], crumbs = [], noindex = false, hideCta = false} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const fullTitle = Astro.url.pathname === '/' ? `${site.name} | Event Styling & Hosting in Kyalami, Midrand` : `${title} | ${site.name}`;
+const ogImage = new URL(image, Astro.site).href;
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  alternateName: site.legalName,
+  description: 'Event styling, décor, catering and hosting with a full walk in, walk out service, based in Kyalami, Midrand.',
+  url: `${site.url}/`,
+  logo: `${site.url}/logo.svg`,
+  image: `${site.url}/og-image.jpg`,
+  telephone: site.phoneIntl,
+  email: site.email,
+  address: {'@type': 'PostalAddress', addressLocality: 'Midrand', addressRegion: 'Gauteng', addressCountry: 'ZA'},
+  areaServed: site.serves.map((name) => ({'@type': 'Place', name})),
+  sameAs: [site.facebook, site.instagram],
+};
+const breadcrumb = crumbs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [{name: 'Home', href: '/'}, ...crumbs].map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.name,
+        item: new URL(c.href, Astro.site).href,
+      })),
+    }
+  : null;
+const ld = [business, ...(breadcrumb ? [breadcrumb] : []), ...schema];
+---
+
+<!doctype html>
+<html lang="en-ZA" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#1b241d" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_ZA" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:ital,wght@0,400..700;1,400..700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="head" />
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+  </head>
+  <body>
+    <a href="#main" class="caps fixed top-3 left-3 z-[70] -translate-y-24 bg-paper px-4 py-3 text-ink focus:translate-y-0">Skip to content</a>
+
+    <a href="/" class="brand fixed top-4 left-4 z-[55] block md:top-6 md:left-10" aria-label="190 on Maple — home">
+      <Logo mono class="h-auto w-[112px] md:w-[148px]" />
+    </a>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="menu"
+      class="caps menu-btn fixed top-5 right-4 z-[55] flex min-h-11 items-center gap-4 px-6 py-3 text-white backdrop-blur-md transition-colors duration-500 md:top-7 md:right-8"
+    >
+      <span data-label>Menu</span>
+      <span class="plus text-[18px] leading-none transition-transform duration-500 ease-silk" aria-hidden="true">+</span>
+    </button>
+
+    {
+      !hideCta && (
+        <a href="/contact/" class="caps cta fixed right-4 bottom-4 z-[55] bg-paper px-7 py-4 text-ink shadow-[0_10px_40px_rgb(0_0_0/0.18)] transition-colors duration-500 hover:bg-blush md:right-8 md:bottom-7">
+          Plan your <em class="script text-[19px] tracking-normal">event</em>
+        </a>
+      )
+    }
+
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Menu />
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      import '../scripts/app.ts';
+    </script>
+  </body>
+</html>
+
+<style>
+  /* The menu button sits over photos and paper alike; once the paper slab is
+     in, it turns solid so it stays legible. */
+  :global(.menu-open) .menu-btn {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  :global(.menu-open) .plus {
+    transform: rotate(45deg);
+  }
+  :global(.menu-open) .cta {
+    background: var(--color-blush);
+  }
+  /* The wordmark reads light over photos and dark sections, forest over paper
+     (scripts/app.ts toggles .on-light by what sits under the header). */
+  .brand {
+    color: var(--color-paper);
+    filter: drop-shadow(0 2px 12px rgb(0 0 0 / 0.35));
+    transform-origin: top left;
+    transition:
+      color 0.4s ease,
+      filter 0.4s ease,
+      transform 0.6s var(--ease-silk);
+  }
+  :global(.tucked:not(.menu-open)) .brand {
+    transform: scale(0.68);
+  }
+  :global(.on-light) .brand,
+  :global(.menu-open) .brand {
+    color: var(--color-forest);
+    filter: none;
+  }
+  @media (max-width: 767px) {
+    /* On phones the paper slab covers the whole screen. */
+    :global(.menu-open) .brand {
+      color: var(--color-forest);
+    }
+  }
+  @media (min-width: 768px) {
+    /* On wider screens the menu only covers the right; keep the logo as it was. */
+    :global(.menu-open:not(.on-light)) .brand {
+      color: var(--color-paper);
+      filter: drop-shadow(0 2px 12px rgb(0 0 0 / 0.35));
+    }
+  }
+  /* Over light sections the frosted button needs a darker base to stay legible. */
+  .menu-btn {
+    background-color: rgb(27 36 29 / 0.55);
+  }
+  .menu-btn:hover {
+    background-color: rgb(27 36 29 / 0.75);
+  }
+</style>

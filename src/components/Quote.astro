@@ -1,0 +1,20 @@
+---
+import {testimonials} from '../data/site';
+
+interface Props {
+  index?: number;
+  tone?: 'paper' | 'blush';
+}
+const {index = 0, tone = 'blush'} = Astro.props;
+const t = testimonials[index];
+---
+
+<section class:list={['relative', tone === 'blush' ? 'bg-blush' : 'bg-paper']}>
+  <figure class="mx-auto max-w-[1100px] px-5 py-24 text-center md:px-14 md:py-32" data-reveal>
+    <span class="script block text-[90px] leading-[0.5] text-rose-deep" aria-hidden="true">“</span>
+    <blockquote class="display mt-6 text-[clamp(28px,3.3vw,50px)] leading-[1.08] text-forest normal-case">
+      {t.quote}
+    </blockquote>
+    <figcaption class="caps mt-8 text-ink/70">— {t.who}</figcaption>
+  </figure>
+</section>

@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {faqs} from '../data/site';
+
+const crumbs = [{name: 'FAQ', href: '/faq/'}];
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({'@type': 'Question', name: f.q, acceptedAnswer: {'@type': 'Answer', text: f.a}})),
+};
+---
+
+<Base
+  title="Frequently Asked Questions"
+  description="Answers about 190 on Maple’s event styling: walk in, walk out service, areas we cover, budgets, catering, themes, tents and furniture, venue hire and how to get a quote."
+  crumbs={crumbs}
+  schema={[faqSchema]}
+>
+  <Hero lines={[{t: 'Good'}, {t: 'questions', s: true}]} slides={['drinks-03.jpg']} crumbs={crumbs} />
+
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-[1500px] gap-12 px-5 py-20 md:grid-cols-[1fr_2fr] md:px-14 md:py-28">
+      <div data-reveal>
+        <h2 class="display text-[clamp(38px,4vw,66px)] text-forest">Everything <span class="s text-rose-deep">you need to know</span></h2>
+        <p class="mt-6 max-w-[36ch] text-ink/80">Can’t find your answer? <a href="/contact/" class="text-rose-deep underline underline-offset-4">Ask us directly</a> or WhatsApp us.</p>
+      </div>
+      <div class="border-t border-forest/20">
+        {
+          faqs.map((f, i) => (
+            <details class="group border-b border-forest/20" data-reveal style={`--d:${i % 3}`} open={i === 0}>
+              <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5">
+                <h3 class="display text-[clamp(24px,2.2vw,34px)] text-forest">{f.q}</h3>
+                <span class="text-[26px] leading-none text-rose-deep transition-transform duration-500 ease-silk group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <p class="max-w-[64ch] pb-7 text-[17px] text-ink/85">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand photo="tablescapes-07.jpg" />
+</Base>

@@ -1,0 +1,198 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import {events, packages, site} from '../data/site';
+
+const crumbs = [{name: 'Contact', href: '/contact/'}];
+const types = [...events.map((e) => e.name), 'Something else'];
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact 190 on Maple',
+  url: `${site.url}/contact/`,
+  mainEntity: {'@id': `${site.url}/#business`},
+};
+const field = 'mt-2 block w-full min-h-12 border border-forest/30 bg-paper px-4 py-3 text-[17px] text-ink placeholder:text-ink/40 focus:border-forest focus:outline-none focus-visible:outline-2 focus-visible:outline-rose';
+const labelCls = 'caps text-ink/80';
+---
+
+<Base
+  title="Contact & Enquiries"
+  description="Plan your event with 190 on Maple. Call or WhatsApp 062 820 1498, email hello@190onmaple.co.za, or send an enquiry with your date, guest count and theme."
+  crumbs={crumbs}
+  schema={[contactSchema]}
+  hideCta
+>
+  <Hero lines={[{t: 'Let’s plan'}, {t: 'your event', s: true}]} slides={['tablescapes-12.jpg']} crumbs={crumbs} body="Share a few details and we’ll come back with ideas and a clear, itemised quote." />
+
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-[1500px] gap-16 px-5 py-20 md:px-14 md:py-28 lg:grid-cols-[1fr_1.5fr]">
+      <aside class="space-y-10">
+        <div>
+          <h2 class="display text-[clamp(36px,3.6vw,58px)] text-forest">Talk <span class="s text-rose-deep">to us</span></h2>
+          <p class="mt-4 max-w-[40ch] text-ink/80">Prefer a chat? Call, WhatsApp or email. We’re based in {site.area} and work across {site.region}.</p>
+        </div>
+        <ul class="divide-y divide-forest/15 border-y border-forest/15">
+          <li><a href={`tel:${site.phoneIntl}`} class="flex min-h-16 items-center justify-between gap-4 py-4 hover:text-rose-deep"><span class="caps text-ink/70">Call</span><span class="text-[18px]">{site.phone}</span></a></li>
+          <li><a href={site.whatsapp} rel="noopener" target="_blank" class="flex min-h-16 items-center justify-between gap-4 py-4 hover:text-rose-deep"><span class="caps text-ink/70">WhatsApp</span><span class="text-[18px]">{site.phone}</span></a></li>
+          <li><a href={`mailto:${site.email}`} class="flex min-h-16 items-center justify-between gap-4 py-4 hover:text-rose-deep"><span class="caps text-ink/70">Email</span><span class="text-[18px] break-all">{site.email}</span></a></li>
+          <li><a href={site.instagram} rel="noopener" target="_blank" class="flex min-h-16 items-center justify-between gap-4 py-4 hover:text-rose-deep"><span class="caps text-ink/70">Instagram</span><span class="text-[18px]">@190onmaple</span></a></li>
+          <li><a href={site.facebook} rel="noopener" target="_blank" class="flex min-h-16 items-center justify-between gap-4 py-4 hover:text-rose-deep"><span class="caps text-ink/70">Facebook</span><span class="text-[18px]">190 on Maple</span></a></li>
+        </ul>
+        <p class="border-l-2 border-rose pl-5 text-[15px] text-ink/75">{site.residenceNote}</p>
+      </aside>
+
+      <form id="enquiry" class="bg-sand p-6 md:p-10" novalidate aria-describedby="form-note">
+        <h2 class="display text-[clamp(32px,3vw,48px)] text-forest">Event enquiry</h2>
+        <p id="form-note" class="mt-2 text-[15px] text-ink/75">Fields marked * are required. Sending opens WhatsApp with your details filled in. You can also send by email.</p>
+
+        <div class="mt-6 hidden border-l-4 border-rose-deep bg-paper p-4 text-[16px]" role="alert" tabindex="-1" data-summary></div>
+
+        <div class="mt-8 grid gap-6 sm:grid-cols-2">
+          <label class="block">
+            <span class={labelCls}>Your name *</span>
+            <input name="name" required autocomplete="name" class={field} aria-describedby="err-name" />
+            <span id="err-name" class="mt-1 hidden text-[14px] text-rose-deep" data-err></span>
+          </label>
+          <label class="block">
+            <span class={labelCls}>Phone *</span>
+            <input name="phone" type="tel" required autocomplete="tel" inputmode="tel" class={field} aria-describedby="err-phone" />
+            <span id="err-phone" class="mt-1 hidden text-[14px] text-rose-deep" data-err></span>
+          </label>
+          <label class="block sm:col-span-2">
+            <span class={labelCls}>Email</span>
+            <input name="email" type="email" autocomplete="email" class={field} aria-describedby="err-email" />
+            <span id="err-email" class="mt-1 hidden text-[14px] text-rose-deep" data-err></span>
+          </label>
+          <label class="block">
+            <span class={labelCls}>Type of event *</span>
+            <select name="type" required class={field} aria-describedby="err-type">
+              <option value="">Choose one…</option>
+              {types.map((t) => <option>{t}</option>)}
+            </select>
+            <span id="err-type" class="mt-1 hidden text-[14px] text-rose-deep" data-err></span>
+          </label>
+          <label class="block">
+            <span class={labelCls}>Event date</span>
+            <input name="date" type="date" class={field} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>Number of guests</span>
+            <input name="guests" type="number" min="1" inputmode="numeric" class={field} />
+          </label>
+          <label class="block">
+            <span class={labelCls}>Package</span>
+            <select name="package" class={field}>
+              <option value="">Not sure yet</option>
+              {packages.map((p) => <option>{p.name}</option>)}
+            </select>
+          </label>
+          <fieldset class="sm:col-span-2">
+            <legend class={labelCls}>Venue</legend>
+            <div class="mt-2 grid gap-2 sm:grid-cols-2">
+              <label class="flex min-h-12 cursor-pointer items-center gap-3 border border-forest/30 bg-paper px-4 has-[:checked]:border-forest">
+                <input type="radio" name="venue" value="I have a venue" class="accent-forest" checked /> I have a venue
+              </label>
+              <label class="flex min-h-12 cursor-pointer items-center gap-3 border border-forest/30 bg-paper px-4 has-[:checked]:border-forest">
+                <input type="radio" name="venue" value="I need help finding a venue" class="accent-forest" /> Help me find one
+              </label>
+            </div>
+          </fieldset>
+          <label class="block sm:col-span-2">
+            <span class={labelCls}>Area or venue name</span>
+            <input name="area" placeholder="e.g. Fourways, or the venue you have in mind" class={field} />
+          </label>
+          <label class="block sm:col-span-2">
+            <span class={labelCls}>Tell us about it</span>
+            <textarea name="message" rows="5" placeholder="Theme, colours, catering, anything you’re dreaming of…" class={field}></textarea>
+          </label>
+        </div>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button type="submit" value="whatsapp" class="caps inline-flex min-h-12 items-center bg-forest px-8 py-4 text-paper transition-colors hover:bg-ink">Send via WhatsApp</button>
+          <button type="submit" value="email" class="caps inline-flex min-h-12 items-center border border-forest px-8 py-4 text-forest transition-colors hover:bg-paper">Send by email</button>
+        </div>
+        <p class="mt-4 hidden text-[15px] text-forest" role="status" data-done></p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.getElementById('enquiry') as HTMLFormElement;
+  const summary = form.querySelector<HTMLElement>('[data-summary]')!;
+  const done = form.querySelector<HTMLElement>('[data-done]')!;
+  const WA = '27628201498';
+  const MAIL = 'hello@190onmaple.co.za';
+
+  // Pre-select a package when arriving from the packages page.
+  const pkg = new URLSearchParams(location.search).get('package');
+  if (pkg) (form.elements.namedItem('package') as HTMLSelectElement).value = pkg;
+
+  const rules: Record<string, (v: string) => string> = {
+    name: (v) => (v.trim() ? '' : 'Please tell us your name.'),
+    phone: (v) => (v.replace(/\D/g, '').length >= 9 ? '' : 'Please enter a phone number we can reach you on, e.g. 082 123 4567.'),
+    email: (v) => (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'That email doesn’t look right. Check it, or leave it blank.'),
+    type: (v) => (v ? '' : 'Please choose the type of event.'),
+  };
+
+  const check = (name: string) => {
+    const el = form.elements.namedItem(name) as HTMLInputElement;
+    const msg = rules[name](el.value);
+    const err = document.getElementById(`err-${name}`)!;
+    err.textContent = msg;
+    err.classList.toggle('hidden', !msg);
+    el.setAttribute('aria-invalid', String(!!msg));
+    return msg;
+  };
+  // Validate on blur, not on every keystroke.
+  Object.keys(rules).forEach((n) => (form.elements.namedItem(n) as HTMLElement).addEventListener('blur', () => check(n)));
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const errors = Object.keys(rules)
+      .map((n) => [n, check(n)] as const)
+      .filter(([, m]) => m);
+    if (errors.length) {
+      summary.innerHTML = `<p class="font-bold">Please fix ${errors.length === 1 ? 'this' : 'these'} first:</p><ul class="mt-2 list-disc pl-5">${errors
+        .map(([n, m]) => `<li><a class="underline" href="#" data-goto="${n}">${m}</a></li>`)
+        .join('')}</ul>`;
+      summary.classList.remove('hidden');
+      summary.focus();
+      summary.querySelectorAll<HTMLAnchorElement>('[data-goto]').forEach((a) =>
+        a.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          (form.elements.namedItem(a.dataset.goto!) as HTMLElement).focus();
+        }),
+      );
+      return;
+    }
+    summary.classList.add('hidden');
+
+    const d = new FormData(form);
+    const get = (k: string) => String(d.get(k) ?? '').trim();
+    const lines = [
+      'Hi 190 on Maple! I’d like to enquire about an event.',
+      '',
+      `Name: ${get('name')}`,
+      `Phone: ${get('phone')}`,
+      get('email') && `Email: ${get('email')}`,
+      `Event: ${get('type')}`,
+      get('date') && `Date: ${get('date')}`,
+      get('guests') && `Guests: ${get('guests')}`,
+      get('package') && `Package: ${get('package')}`,
+      `Venue: ${get('venue')}${get('area') ? ` (${get('area')})` : ''}`,
+      get('message') && `\n${get('message')}`,
+    ].filter(Boolean);
+    const text = lines.join('\n');
+    const via = (e.submitter as HTMLButtonElement | null)?.value;
+    if (via === 'email') {
+      location.href = `mailto:${MAIL}?subject=${encodeURIComponent(`Event enquiry: ${get('type')}`)}&body=${encodeURIComponent(text)}`;
+      done.textContent = 'Your email app should open with the enquiry ready to send. If nothing happens, email us at ' + MAIL + '.';
+    } else {
+      window.open(`https://wa.me/${WA}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+      done.textContent = 'WhatsApp should open with your enquiry ready to send. If it doesn’t, call or WhatsApp 062 820 1498.';
+    }
+    done.classList.remove('hidden');
+  });
+</script>
